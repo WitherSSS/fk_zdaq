@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成器</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            width: 200px;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+        #qrcodeContent {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>浙电安全学习平台视频观看分享二维码生成器</h1>
+        <h2>v1.00-alpha 20240611</h2>
+        <input type="text" id="idInput" placeholder="视频ID (默认随机)">
+        <input type="text" id="videoTimeInput" placeholder="视频时间 (默认180)">
+        <div id="qrcode"></div>
+        <p id="qrcodeContent"></p>
+    </div>
+
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQRCode() {
+            let id = document.getElementById('idInput').value;
+            let videoTime = document.getElementById('videoTimeInput').value;
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            if (!id) {
+                id = getRandomInt(0, 34176);
+            }
+
+            if (!videoTime) {
+                videoTime = 180;
+            }
+
+            const content = `watchVideo;${id};${videoTime};${videoTime};${currentTime}`;
+            const qrcodeContainer = document.getElementById('qrcode');
+            const qrcodeContent = document.getElementById('qrcodeContent');
+            qrcodeContainer.innerHTML = '';  // 清空之前的二维码
+
+            QRCode.toCanvas(document.createElement('canvas'), content, { width: 256, height: 256 }, function (error, canvas) {
+                if (error) {
+                    console.error(error);
+                } else {
+                    qrcodeContainer.appendChild(canvas);
+                    qrcodeContent.innerText = content;
+                    console.log('二维码生成成功!');
+                }
+            });
+        }
+
+        document.getElementById('idInput').addEventListener('input', generateQRCode);
+        document.getElementById('videoTimeInput').addEventListener('input', generateQRCode);
+
+        // Initial QR code generation
+        generateQRCode();
+    </script>
+</body>
+</html>
