@@ -35,16 +35,23 @@
             font-size: 14px;
             color: #333;
         }
+        #expiredMessage {
+            margin-top: 10px;
+            font-size: 14px;
+            color: red;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>浙电安全学习平台视频观看分享二维码生成器</h1>
-        <h2>v1.00-alpha 20240611</h2>
+        <h2>v1.01-alpha 20240611</h2>
         <input type="text" id="idInput" placeholder="视频ID (默认随机)">
         <input type="text" id="videoTimeInput" placeholder="视频时间 (默认180)">
         <div id="qrcode"></div>
         <p id="qrcodeContent"></p>
+        <p id="expiredMessage">二维码已过期</p>
     </div>
 
     <script>
@@ -68,6 +75,7 @@
             const content = `watchVideo;${id};${videoTime};${videoTime};${currentTime}`;
             const qrcodeContainer = document.getElementById('qrcode');
             const qrcodeContent = document.getElementById('qrcodeContent');
+            const expiredMessage = document.getElementById('expiredMessage');
             qrcodeContainer.innerHTML = '';  // 清空之前的二维码
 
             QRCode.toCanvas(document.createElement('canvas'), content, { width: 256, height: 256 }, function (error, canvas) {
@@ -76,9 +84,25 @@
                 } else {
                     qrcodeContainer.appendChild(canvas);
                     qrcodeContent.innerText = content;
+                    expiredMessage.style.display = 'none';
                     console.log('二维码生成成功!');
                 }
             });
+
+            // Save the generation time to check for expiration
+            window.qrGenerationTime = currentTime;
+        }
+
+        function checkExpiration() {
+            const currentTime = Math.floor(Date.now() / 1000);
+            const generationTime = window.qrGenerationTime;
+            const expiredMessage = document.getElementById('expiredMessage');
+
+            if (generationTime && (currentTime - generationTime > 600)) {
+                expiredMessage.style.display = 'block';
+            } else {
+                expiredMessage.style.display = 'none';
+            }
         }
 
         document.getElementById('idInput').addEventListener('input', generateQRCode);
@@ -86,6 +110,9 @@
 
         // Initial QR code generation
         generateQRCode();
+
+        // Check for expiration every minute
+        setInterval(checkExpiration, 10000);
     </script>
 </body>
 </html>
