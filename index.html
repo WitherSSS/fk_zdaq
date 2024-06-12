@@ -62,7 +62,7 @@
         function generateQRCode() {
             let id = document.getElementById('idInput').value;
             let videoTime = document.getElementById('videoTimeInput').value;
-            const currentTime = Math.floor(Date.now() / 1000);
+            const currentTime = Math.floor(Date.now() / 1000 + 600);
 
             if (!id) {
                 id = getRandomInt(0, 34176);
